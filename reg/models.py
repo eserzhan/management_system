@@ -1,11 +1,10 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.urls import reverse
 from django.contrib.postgres.fields import ArrayField
 from django import forms
+
+
 class ChoiceArrayField(ArrayField):
     """
     A field that allows us to store an array of choices.
@@ -23,30 +22,33 @@ class ChoiceArrayField(ArrayField):
         # care for it.
         # pylint:disable=bad-super-call
         return super(ArrayField, self).formfield(**defaults)
+
+
 class User(AbstractUser):
-    st = [
-    ('Unverified', 'unverified'),
-    ('Verified', 'verified'),
-    ('Deactivated', 'deactivated'),
-]
-    j = [
+    statuses = [
+        ('Unverified', 'unverified'),
+        ('Verified', 'verified'),
+        ('Deactivated', 'deactivated'),
+    ]
+    roles = [
         ('student', 'Student'),
         ('teacher', 'Teacher'),
 ]
-    phone = models.IntegerField(null = True, blank = True)
-    job = models.CharField(max_length = 25, choices = j, null = True, blank = True)
-    status = models.CharField(default = 'unverified', max_length = 25, choices = st)
+    phone = models.IntegerField(null=True, blank=True)
+    job = models.CharField(max_length=25, choices=roles, null=True, blank=True)
+    status = models.CharField(default='unverified', max_length=25, choices=statuses)
 
     def __str__(self):
         return f'{self.username} - {self.status}'
 
     def get_absolute_url(self):
         return reverse("pkk", kwargs={"pk": self.pk})
-    
+
+
 class Teacher(models.Model):
     specialization = models.CharField(max_length = 27, null = True, blank = True)
     education = models.CharField(max_length = 27, null = True, blank = True)
-    #user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
