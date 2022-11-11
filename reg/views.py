@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView, ListView, UpdateView
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
-from reg.forms import *
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseForbidden
-from django.contrib.auth import logout
+from reg.forms import *
 
 
 class RegisterUser(CreateView):
@@ -48,13 +48,16 @@ class RegisterActivity(CreateView):
             self.__class__.form_class = RegisterStudentSubjectForm
         return super().setup(request, *args, **kwargs)
 
+
 class ArticleListView(ListView):
     model = User
     paginate_by = 100  # if pagination is desired
     template_name = 'reg/articles.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
 
 class UserUpdateView(UpdateView):
     model = User
@@ -62,21 +65,23 @@ class UserUpdateView(UpdateView):
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('usr')
 
+
 class LoginUser(LoginView):
     form_class = AuthenticationForm
     template_name = 'reg/login.html'
     authentication_form = PickyAuthenticationForm
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Login'
         return context
-    
 
     def get_success_url(self):
         return reverse_lazy('home')
 
     def post(self, request, *args: str, **kwargs) -> HttpResponse:
         return super().post(request, *args, **kwargs)
+
 
 def bas(request):
   
@@ -90,6 +95,3 @@ def bas(request):
 def logout_user(request):
     logout(request)
     return redirect('log')
-
-
-    

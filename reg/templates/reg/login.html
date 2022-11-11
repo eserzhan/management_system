@@ -1,10 +1,19 @@
+{% extends "reg/header.html" %}
+
 {% block content %}
-<li><a href="/">Home</a></li>
-<h1>{{title}}</h1>
-<form method="post">
+
+{% load crispy_forms_tags %}
+
+<!--Register-->
+<div class="container py-5">
+  <h1>Вход</h1>
+    <br>
+  <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Войти</button>
-</form>
- 
+    {{ form|crispy }}
+    <button class="btn btn-primary" type="submit">Войти</button>
+  </form>
+  <p class="text-center">Если вы еще не зарегистрированы в системе, <a href="/register">создайте</a> аккаунт</p>
+</div>
+
 {% endblock %}
