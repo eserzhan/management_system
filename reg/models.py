@@ -6,21 +6,14 @@ from django import forms
 
 
 class ChoiceArrayField(ArrayField):
-    """
-    A field that allows us to store an array of choices.
-    Uses Django's Postgres ArrayField
-    and a MultipleChoiceField for its formfield.
-    """
-
+    
     def formfield(self, **kwargs):
         defaults = {
             'form_class': forms.MultipleChoiceField,
             'choices': self.base_field.choices,
         }
         defaults.update(kwargs)
-        # Skip our parent's formfield implementation completely as we don't
-        # care for it.
-        # pylint:disable=bad-super-call
+    
         return super(ArrayField, self).formfield(**defaults)
 
 
@@ -48,7 +41,6 @@ class User(AbstractUser):
 class Teacher(models.Model):
     specialization = models.CharField(max_length = 27, null = True, blank = True)
     education = models.CharField(max_length = 27, null = True, blank = True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
@@ -56,7 +48,6 @@ class Teacher(models.Model):
 
 class Student(models.Model):
     grade = models.IntegerField(null = True, blank = True)
-    #user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
@@ -74,10 +65,8 @@ class Subject(models.Model):
 )
 
     name = models.CharField(max_length = 27, null = True, blank = True)
-    #days = models.CharField(max_length=1, choices=DAYS_OF_WEEK)
     days = ChoiceArrayField(base_field = models.CharField(max_length=1, choices=DAYS_OF_WEEK), default=list)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    time = ArrayField(base_field = models.CharField(max_length=255), default=list)
     cabinet = models.IntegerField(null = True, blank = True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null = True)
 
@@ -90,3 +79,12 @@ class StudentSubject(models.Model):
 
     def __str__(self):
         return f'{self.student.user.username} - {self.subject.name}'
+
+class Attendance(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null = True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null = True)
+    attended = models.BooleanField()
+    date = models.DateTimeField()
+    
+    def __str__(self):
+        return f'{self.student.user.username} - {self.attended}'

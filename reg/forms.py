@@ -19,10 +19,9 @@ class RegisterUserForm(UserCreationForm):
     job = forms.ChoiceField(label='Выберите роль', choices=roles, required=False)
     password1 = forms.CharField(label='Введите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    
     class Meta:
         model = User
-        fields = ('username', 'job', 'password1', 'password2')
+        fields = ('username', 'job', 'password1', 'password2',)
 
 
 class RegisterAdminUserForm(RegisterUserForm):
@@ -89,7 +88,6 @@ class RegisterSubjectForm(forms.ModelForm):
 
 
 class RegisterStudentSubjectForm(forms.ModelForm):
-    # days = forms.ChoiceField(choices=DAYS_OF_WEEK, required=False)
 
     class Meta:
         model = StudentSubject

@@ -6,7 +6,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseForbidden
 from reg.forms import *
-
+from rest_framework import generics
+from .serializers import *
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 class RegisterUser(CreateView):
     form_class = None
@@ -95,3 +99,53 @@ def bas(request):
 def logout_user(request):
     logout(request)
     return redirect('log')
+
+
+class TeacherAPIView(generics.ListCreateAPIView):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+class TeacherList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile_list.html'
+
+    def get(self, request, *args, **kwargs):
+        if len(kwargs) != 0:
+            queryset = Subject.objects.get(teacher = kwargs['nom'])
+
+        queryset = Teacher.objects.all()
+        return Response({'teachers': queryset})
+
+
+class SubjectList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'subjects_list.html'
+
+    def get(self, request, *args, **kwargs):
+        
+        queryset = Subject.objects.filter(teacher_id = kwargs['nom'])
+        
+            
+        return Response({'subjects': queryset})
+
+class StudentList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'students_list.html'
+
+    def get(self, request, *args, **kwargs):
+        
+        queryset = StudentSubject.objects.filter(subject_id = kwargs['nom1'])
+      
+            
+        return Response({'students': queryset})
+
+class AttendanceList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'attendance_list.html'
+
+    def get(self, request, *args, **kwargs):
+        print(request.path)
+        queryset = StudentSubject.objects.all()
+        print(queryset)
+            
+        return Response({'attendance': queryset})
