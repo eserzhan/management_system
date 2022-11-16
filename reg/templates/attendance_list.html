@@ -2,7 +2,7 @@
     <h1>attendance</h1>
     <ul>
         {% for attend in attendance %}
-        <li>{{ attend.attended }}|</li>
+        <li>{{ attend }}| {{attend.date}}</li>
         {% endfor %}
     </ul>
     </body></html>

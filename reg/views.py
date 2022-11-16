@@ -11,7 +11,7 @@ from .serializers import *
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Q
 class RegisterUser(CreateView):
     form_class = None
     template_name = 'reg/register.html'
@@ -110,42 +110,33 @@ class TeacherList(APIView):
     template_name = 'profile_list.html'
 
     def get(self, request, *args, **kwargs):
-        if len(kwargs) != 0:
-            queryset = Subject.objects.get(teacher = kwargs['nom'])
-
         queryset = Teacher.objects.all()
         return Response({'teachers': queryset})
 
 
-class SubjectList(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'subjects_list.html'
-
-    def get(self, request, *args, **kwargs):
-        
-        queryset = Subject.objects.filter(teacher_id = kwargs['nom'])
-        
-            
-        return Response({'subjects': queryset})
 
 class StudentList(APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'students_list.html'
-
+    template_name = None
+    temp = None
+    new = None 
     def get(self, request, *args, **kwargs):
-        
-        queryset = StudentSubject.objects.filter(subject_id = kwargs['nom1'])
-      
-            
-        return Response({'students': queryset})
+        queryset = self.__class__.temp
+        return Response({self.__class__.new: queryset})
 
-class AttendanceList(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'attendance_list.html'
+    def setup(self, request, *args, **kwargs):
+        if len(kwargs) == 1:
+            self.__class__.template_name = 'subjects_list.html'
+            self.__class__.temp = Subject.objects.filter(teacher__user__username = kwargs['teachername'])
+            self.__class__.new = 'subjects'
+        elif len(kwargs) == 2:
+            self.__class__.template_name = 'students_list.html'
+            self.__class__.temp = StudentSubject.objects.filter(subject__name = kwargs['subj'])
+            self.__class__.new = 'students'
+        else:
+            self.__class__.template_name = 'attendance_list.html'
+            self.__class__.temp = Attendance.objects.filter(Q(stsu__student__user__username=kwargs['stud']) & Q(stsu__subject__name=kwargs['subj']))
+            self.__class__.new = 'attendance'
+        return super().setup(request, *args, **kwargs)
+    
 
-    def get(self, request, *args, **kwargs):
-        print(request.path)
-        queryset = StudentSubject.objects.all()
-        print(queryset)
-            
-        return Response({'attendance': queryset})

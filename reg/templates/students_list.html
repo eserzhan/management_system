@@ -2,8 +2,8 @@
     <h1>Students</h1>
     <ul>
         {% for student in students %}
-        <!-- <li>{{ student.student.user.username }}|<a href="{% url 'att' 4 %}">Attendance</a></li> -->
-        <li>{{ student.student.user.username }}|<a href="{{request.path}}attendance">Attendance</a></li>
+        
+        <li>{{ student.student.user.username }}|<a href="{{request.path}}attendance/{{ student.student.user.username }}">Attendance</a></li>
         {% endfor %}
     </ul>
     </body></html>

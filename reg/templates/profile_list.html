@@ -2,7 +2,7 @@
     <h1>Teachers</h1>
     <ul>
         {% for teacher in teachers %}
-        <li>{{ teacher.user.username }}|<a href="{% url 'teas' teacher.pk  %}">Subjects</a></li>
+        <li>{{ teacher.user.username }}|<a href="{% url 'subject' teacher.user.username  %}">Subjects</a></li>
         {% endfor %}
     </ul>
     </body></html>
