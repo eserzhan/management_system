@@ -1,3 +1,5 @@
+import datetime
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.urls import reverse
@@ -6,21 +8,14 @@ from django import forms
 
 
 class ChoiceArrayField(ArrayField):
-    """
-    A field that allows us to store an array of choices.
-    Uses Django's Postgres ArrayField
-    and a MultipleChoiceField for its formfield.
-    """
-
+    
     def formfield(self, **kwargs):
         defaults = {
             'form_class': forms.MultipleChoiceField,
             'choices': self.base_field.choices,
         }
         defaults.update(kwargs)
-        # Skip our parent's formfield implementation completely as we don't
-        # care for it.
-        # pylint:disable=bad-super-call
+    
         return super(ArrayField, self).formfield(**defaults)
 
 
@@ -48,7 +43,6 @@ class User(AbstractUser):
 class Teacher(models.Model):
     specialization = models.CharField(max_length = 27, null = True, blank = True)
     education = models.CharField(max_length = 27, null = True, blank = True)
-    # user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
@@ -56,7 +50,6 @@ class Teacher(models.Model):
 
 class Student(models.Model):
     grade = models.IntegerField(null = True, blank = True)
-    #user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
@@ -64,20 +57,18 @@ class Student(models.Model):
 
 class Subject(models.Model):
     DAYS_OF_WEEK = (
-    ('0', 'Monday'),
-    ('1', 'Tuesday'),
-    ('2', 'Wednesday'),
-    ('3', 'Thursday'),
-    ('4', 'Friday'),
-    ('5', 'Saturday'),
-    ('6', 'Sunday'),
+    ('Monday', 'Monday'),
+    ('Tuesday', 'Tuesday'),
+    ('Wednesday', 'Wednesday'),
+    ('Thursday', 'Thursday'),
+    ('Friday', 'Friday'),
+    ('Saturday', 'Saturday'),
+    ('Sunday', 'Sunday'),
 )
 
     name = models.CharField(max_length = 27, null = True, blank = True)
-    #days = models.CharField(max_length=1, choices=DAYS_OF_WEEK)
-    days = ChoiceArrayField(base_field = models.CharField(max_length=1, choices=DAYS_OF_WEEK), default=list)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    days = ChoiceArrayField(base_field = models.CharField(max_length=20, choices=DAYS_OF_WEEK), default=list)
+    time = ArrayField(base_field = models.CharField(max_length=255), default=list)
     cabinet = models.IntegerField(null = True, blank = True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null = True)
 
@@ -90,3 +81,19 @@ class StudentSubject(models.Model):
 
     def __str__(self):
         return f'{self.student.user.username} - {self.subject.name}'
+
+class Attendance(models.Model):
+    attendance_choices = (
+    ('absent', 'Absent'),
+    ('present', 'Present')
+)
+
+    stsu = models.ForeignKey(StudentSubject, on_delete=models.CASCADE, null = True)
+    attended = models.CharField(max_length=8, choices=attendance_choices, blank=True)
+    date = models.DateTimeField(default = timezone.now())
+    
+    def get_absolute_url(self):
+        return reverse("namesubj", kwargs={"pk": self.stsu})
+
+    def __str__(self):
+        return f'{self.stsu.student.user.username} - {self.attended}'

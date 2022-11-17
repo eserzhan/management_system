@@ -6,8 +6,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseForbidden
 from reg.forms import *
-
-
+from rest_framework import generics
+from .serializers import *
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.db.models import Q
 class RegisterUser(CreateView):
     form_class = None
     template_name = 'reg/register.html'
@@ -64,7 +68,7 @@ class UserUpdateView(UpdateView):
     fields = ['status']
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('usr')
-
+    context_object_name = 'use'
 
 class LoginUser(LoginView):
     form_class = AuthenticationForm
@@ -95,3 +99,72 @@ def bas(request):
 def logout_user(request):
     logout(request)
     return redirect('log')
+
+
+class TeacherAPIView(generics.ListCreateAPIView):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+class TeacherList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile_list.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = Teacher.objects.all()
+        return Response({'teachers': queryset})
+
+
+
+class StudentList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = None
+    temp = None
+    new = None 
+    def get(self, request, *args, **kwargs):
+        queryset = self.__class__.temp
+        return Response({self.__class__.new: queryset})
+
+    def setup(self, request, *args, **kwargs):
+        if len(kwargs) == 1:
+            self.__class__.template_name = 'subjects_list.html'
+            self.__class__.temp = Subject.objects.filter(teacher__user__username = kwargs['teachername'])
+            self.__class__.new = 'subjects'
+        elif len(kwargs) == 2:
+            self.__class__.template_name = 'students_list.html'
+            self.__class__.temp = StudentSubject.objects.filter(subject__name = kwargs['subj'])
+            self.__class__.new = 'students'
+        else:
+            self.__class__.template_name = 'attendance_list.html'
+            self.__class__.temp = Attendance.objects.filter(Q(stsu__student__user__username=kwargs['stud']) & Q(stsu__subject__name=kwargs['subj']))
+            self.__class__.new = 'attendance'
+        return super().setup(request, *args, **kwargs)
+    
+
+class SubjectList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'subject.html'
+    
+
+    def get(self, request, *args, **kwargs):
+        queryset = Subject.objects.all()
+        return Response({'subjects': queryset})
+
+class Student(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'students.html'
+    
+
+    def get(self, request, *args, **kwargs):
+        print(kwargs)
+        queryset = StudentSubject.objects.filter(subject__name= kwargs['subjname'])
+        return Response({'students': queryset})
+
+class PassRequestToFormViewMixin:
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.kwargs
+        return kwargs
+class AttendanceCreate(PassRequestToFormViewMixin, CreateView):
+    form_class = Attendanceform
+    template_name = 'reg/att_update_form.html'
+    success_url = reverse_lazy('home')

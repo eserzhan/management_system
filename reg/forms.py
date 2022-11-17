@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from .models import *
-
+from django.db.models import Q
 
 User1 = get_user_model()
 
@@ -19,10 +19,9 @@ class RegisterUserForm(UserCreationForm):
     job = forms.ChoiceField(label='Выберите роль', choices=roles, required=False)
     password1 = forms.CharField(label='Введите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    
     class Meta:
         model = User
-        fields = ('username', 'job', 'password1', 'password2')
+        fields = ('username', 'job', 'password1', 'password2',)
 
 
 class RegisterAdminUserForm(RegisterUserForm):
@@ -69,13 +68,13 @@ class RegisterStudentForm(forms.ModelForm):
 
 class RegisterSubjectForm(forms.ModelForm):
     DAYS_OF_WEEK = (
-    ('0', 'Monday'),
-    ('1', 'Tuesday'),
-    ('2', 'Wednesday'),
-    ('3', 'Thursday'),
-    ('4', 'Friday'),
-    ('5', 'Saturday'),
-    ('6', 'Sunday'),
+    ('Monday', 'Monday'),
+    ('Tuesday', 'Tuesday'),
+    ('Wednesday', 'Wednesday'),
+    ('Thursday', 'Thursday'),
+    ('Friday', 'Friday'),
+    ('Saturday', 'Saturday'),
+    ('Sunday', 'Sunday'),
 )
 
     class Meta:
@@ -89,7 +88,6 @@ class RegisterSubjectForm(forms.ModelForm):
 
 
 class RegisterStudentSubjectForm(forms.ModelForm):
-    # days = forms.ChoiceField(choices=DAYS_OF_WEEK, required=False)
 
     class Meta:
         model = StudentSubject
@@ -103,3 +101,19 @@ class PickyAuthenticationForm(AuthenticationForm):
                 "Sorry, account not verified",
                 code='no_b_users',
             )
+
+class Attendanceform(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+            self.request = kwargs.pop("request")
+            super().__init__(*args, **kwargs)
+            print(self.request)
+            self.fields['stsu'].initial = StudentSubject.objects.get(Q(subject__name=self.request['subjname']) & Q(student__user__username=self.request['stud']))
+            print(self.fields['stsu'].initial)
+            self.fields['stsu'].disabled = True
+            
+    class Meta:
+        model = Attendance
+        #widgets = {'employee' : HiddenInput}
+        fields = ('stsu', 'attended')
+       

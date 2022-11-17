@@ -10,7 +10,7 @@
     
     {% if request.user.is_authenticated %}
         {% if request.user.is_staff and request.user.is_superuser %}
-        <li > {{user.username}} - admin | <a href="{% url 'BaseU' %}">register admin</a> | <a href="{% url 'act' 'teacher-subject' %}">schedule for teacher</a> | <a href="{% url 'act' 'student-subject' %}">schedule for student</a> |<a href="{% url 'usr'  %}">Users</a> |<a href="{% url 'logo' %}">Выйти</a></li>
+        <li > {{user.username}} - admin | <a href="{% url 'BaseU' %}">register admin</a> | <a href="{% url 'act' 'teacher-subject' %}">schedule for teacher</a> | <a href="{% url 'act' 'student-subject' %}">schedule for student</a> |<a href="{% url 'usr'  %}">Users</a> |<a href="{% url 'tea'  %}">Teachers</a>|<a href="{% url 'attendmark'  %}">Attendance mark</a>|<a href="{% url 'logo' %}">Выйти</a></li>
         {% else %}
         <li > {{user.username}} - {{user.job}} | <a href="{% url 'logo' %}">Выйти</a></li>
         {% endif %}
