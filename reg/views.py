@@ -68,7 +68,7 @@ class UserUpdateView(UpdateView):
     fields = ['status']
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('usr')
-
+    context_object_name = 'use'
 
 class LoginUser(LoginView):
     form_class = AuthenticationForm
@@ -140,3 +140,31 @@ class StudentList(APIView):
         return super().setup(request, *args, **kwargs)
     
 
+class SubjectList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'subject.html'
+    
+
+    def get(self, request, *args, **kwargs):
+        queryset = Subject.objects.all()
+        return Response({'subjects': queryset})
+
+class Student(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'students.html'
+    
+
+    def get(self, request, *args, **kwargs):
+        print(kwargs)
+        queryset = StudentSubject.objects.filter(subject__name= kwargs['subjname'])
+        return Response({'students': queryset})
+
+class PassRequestToFormViewMixin:
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.kwargs
+        return kwargs
+class AttendanceCreate(PassRequestToFormViewMixin, CreateView):
+    form_class = Attendanceform
+    template_name = 'reg/att_update_form.html'
+    success_url = reverse_lazy('home')

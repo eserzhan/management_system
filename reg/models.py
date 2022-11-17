@@ -1,3 +1,5 @@
+import datetime
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.urls import reverse
@@ -81,11 +83,17 @@ class StudentSubject(models.Model):
         return f'{self.student.user.username} - {self.subject.name}'
 
 class Attendance(models.Model):
-    # student = models.ForeignKey(Student, on_delete=models.CASCADE, null = True)
-    # subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null = True)
+    attendance_choices = (
+    ('absent', 'Absent'),
+    ('present', 'Present')
+)
+
     stsu = models.ForeignKey(StudentSubject, on_delete=models.CASCADE, null = True)
-    attended = models.BooleanField()
-    date = models.DateTimeField()
+    attended = models.CharField(max_length=8, choices=attendance_choices, blank=True)
+    date = models.DateTimeField(default = timezone.now())
     
+    def get_absolute_url(self):
+        return reverse("namesubj", kwargs={"pk": self.stsu})
+
     def __str__(self):
         return f'{self.stsu.student.user.username} - {self.attended}'

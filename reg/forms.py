@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from .models import *
-
+from django.db.models import Q
 
 User1 = get_user_model()
 
@@ -101,3 +101,19 @@ class PickyAuthenticationForm(AuthenticationForm):
                 "Sorry, account not verified",
                 code='no_b_users',
             )
+
+class Attendanceform(forms.ModelForm):
+    
+    def __init__(self, *args, **kwargs):
+            self.request = kwargs.pop("request")
+            super().__init__(*args, **kwargs)
+            print(self.request)
+            self.fields['stsu'].initial = StudentSubject.objects.get(Q(subject__name=self.request['subjname']) & Q(student__user__username=self.request['stud']))
+            print(self.fields['stsu'].initial)
+            self.fields['stsu'].disabled = True
+            
+    class Meta:
+        model = Attendance
+        #widgets = {'employee' : HiddenInput}
+        fields = ('stsu', 'attended')
+       
