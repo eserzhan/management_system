@@ -15,5 +15,7 @@ urlpatterns = [
     path('teacher/<str:teachername>/subject/<str:subj>/attendance/<str:stud>', StudentList.as_view(), name='att'),
     path('attendance/', SubjectList.as_view(), name='attendmark'),
     path('attendance/<str:subjname>/', Student.as_view(), name='namesubj'),
-    path('attendance/<str:subjname>/<str:stud>/', AttendanceCreate.as_view(), name='namestu')
+    path('attendance/<str:subjname>/<str:stud>/', AttendanceCreate.as_view(), name='namestu'),
+    path('students', manage_students, name="students"),
+    path('students/<slug:key>', manage_student, name="single_student")
 ]

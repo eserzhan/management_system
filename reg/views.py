@@ -6,12 +6,18 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseForbidden
 from reg.forms import *
-from rest_framework import generics
 from .serializers import *
+from django.db.models import Q
+from django.conf import settings
+from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Q
+from rest_framework.decorators import api_view
+import json
+import redis
+
+
 class RegisterUser(CreateView):
     form_class = None
     template_name = 'reg/register.html'
@@ -168,3 +174,91 @@ class AttendanceCreate(PassRequestToFormViewMixin, CreateView):
     form_class = Attendanceform
     template_name = 'reg/att_update_form.html'
     success_url = reverse_lazy('home')
+
+# connect to our Redis instance
+redis_instance = redis.StrictRedis(host=settings.REDIS_HOST,
+                                   port=settings.REDIS_PORT, db=0)
+
+
+@api_view(['GET', 'POST'])
+def manage_students(request, *args, **kwargs):
+    if request.method == 'GET':
+        students = {}
+        count = 0
+        for key in redis_instance.keys("*"):
+            students[key.decode("utf-8")] = redis_instance.get(key)
+            count += 1
+        response = {
+            'count': count,
+            'msg': f"Found {count} students.",
+            'students': students
+        }
+        return Response(response, status=200)
+
+    elif request.method == 'POST':
+        student = json.loads(request.body)
+        key = list(student.keys())[0]
+        value = student[key]
+        redis_instance.set(key, value)
+        response = {
+            'msg': f"{key} successfully set to {value}"
+        }
+        return Response(response, 201)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def manage_student(request, *args, **kwargs):
+    if request.method == 'GET':
+        if kwargs['key']:
+            value = redis_instance.get(kwargs['key'])
+            if value:
+                response = {
+                    'key': kwargs['key'],
+                    'value': value,
+                    'msg': 'success'
+                }
+                return Response(response, status=200)
+            else:
+                response = {
+                    'key': kwargs['key'],
+                    'value': None,
+                    'msg': 'Not found'
+                }
+                return Response(response, status=404)
+
+    elif request.method == 'PUT':
+        if kwargs['key']:
+            request_data = json.loads(request.body)
+            new_value = request_data['new_value']
+            value = redis_instance.get(kwargs['key'])
+            if value:
+                redis_instance.set(kwargs['key'], new_value)
+                response = {
+                    'key': kwargs['key'],
+                    'value': value,
+                    'msg': f"Successfully updated {kwargs['key']}"
+                }
+                return Response(response, status=200)
+            else:
+                response = {
+                    'key': kwargs['key'],
+                    'value': None,
+                    'msg': 'Not found'
+                }
+                return Response(response, status=404)
+
+    elif request.method == 'DELETE':
+        if kwargs['key']:
+            result = redis_instance.delete(kwargs['key'])
+            if result == 1:
+                response = {
+                    'msg': f"{kwargs['key']} successfully deleted"
+                }
+                return Response(response, status=404)
+            else:
+                response = {
+                    'key': kwargs['key'],
+                    'value': None,
+                    'msg': 'Not found'
+                }
+                return Response(response, status=404)
