@@ -3,11 +3,24 @@
     <h1>Subjects</h1>
     <ul>
         {% for subject in subjects %}
-        
+        {% if request.user.job == 'student' %}
+        <li>{{ subject.subject.name }}|<a href="{{request.path}}{{ subject.subject.name }}/attendance">My attendance</a></li>
+        {% for i in subject.subject.days %}
+            <a>{{ i }} {{ subject.subject.time|index:forloop.counter0 }}</a>
+            
+            {% endfor %}
+          
+           
+            
+        {% else %}
         <li>{{ subject.name }}|<a href="{{request.path}}{{ subject.name }}">Students in this subject</a></li>
+      
         {% for i in subject.days %}
             <a>{{ i }} {{ subject.time|index:forloop.counter0 }}</a>
+            
         {% endfor %}
+        {% endif %}
         {% endfor %}
+        
     </ul>
     </body></html>
