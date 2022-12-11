@@ -32,7 +32,7 @@ class User(AbstractUser):
 # ]
     phone = models.IntegerField(null=True, blank=True)
     job = models.CharField(max_length=25, choices=roles, null=True, blank=True)
-    status = models.CharField(default='unverified', max_length=25, choices=statuses)
+    status = models.CharField(default='Unverified', max_length=25, choices=statuses)
 
     def __str__(self):
         return f'{self.username} - {self.status}'

@@ -176,20 +176,16 @@ class TeacherList(UserPassesTestMixin, ListView):
         return  self.request.user.is_staff
 
 
-class SubjectList(ListView):
+class SubjectList(UserPassesTestMixin, ListView):
    
     template_name = 'subjects_list.html'
     context_object_name = 'subjects'
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff and request.user.is_superuser:
-            if len(kwargs) == 0:
-                self.__class__.queryset = Subject.objects.all()
-
-            else:
-                user = User.objects.get(username=kwargs['teachername']).pk
-                teacher_n = Teacher.objects.get(user_id = user)
-                self.__class__.queryset = Subject.objects.filter(teacher_id = teacher_n.pk)
+            user = User.objects.get(username=kwargs['teachername']).pk
+            teacher_n = Teacher.objects.get(user_id = user)
+            self.__class__.queryset = Subject.objects.filter(teacher_id = teacher_n.pk)
             
         elif request.user.job == 'teacher':
             user = request.user.pk
@@ -201,9 +197,9 @@ class SubjectList(ListView):
             
         return super().get(request, *args, **kwargs)
     
-    # def test_func(self):
-    #     return (self.request.user.job == 'teacher' and reverse('namesubj') in self.request.path) or (reverse('tea') in self.request.path and self.request.user.is_staff) or \
-    #         (self.request.user.job == 'student' and reverse('mysubj', kwargs={'st_name':self.kwargs.get('st_name', None)}) in self.request.path)
+    def test_func(self):
+        return (self.request.user.job == 'teacher' and reverse('namesubj') in self.request.path) or (reverse('tea') in self.request.path and self.request.user.is_staff) or \
+            (self.request.user.job == 'student' and reverse('mysubj', kwargs={'st_name':self.kwargs.get('st_name', None)}) in self.request.path)
 
 
 class AllSubjectList(ListView):
@@ -216,7 +212,7 @@ class AllSubjectList(ListView):
         return super().get(request, *args, **kwargs)
 
 
-class StudentList(ListView):
+class StudentList(UserPassesTestMixin, ListView):
     template_name = 'students.html'
     context_object_name = 'students'
 
@@ -225,15 +221,15 @@ class StudentList(ListView):
      
         return super().get(request, *args, **kwargs)
 
-    # def test_func(self):
-    #     return (self.request.user.job == 'teacher' and reverse('namestu', kwargs={'sbj_name': self.kwargs['sbj_name']}) in self.request.path) \
-    #          or \
-    #             (reverse('stu', kwargs={'teachername': self.kwargs.get('teachername', None),'sbj_name': self.kwargs['sbj_name']}) in self.request.path \
-    #             and self.request.user.is_staff)
+    def test_func(self):
+        return (self.request.user.job == 'teacher' and reverse('namestu', kwargs={'sbj_name': self.kwargs['sbj_name']}) in self.request.path) \
+             or \
+                (reverse('stu', kwargs={'teachername': self.kwargs.get('teachername', None),'sbj_name': self.kwargs['sbj_name']}) in self.request.path \
+                and self.request.user.is_staff)
 
 
 class AllStudentsList(ListView):
-    template_name = 'students_list.html'
+    template_name = 'students.html'
     context_object_name = 'students'
 
     def get(self, request, *args, **kwargs):
