@@ -15,12 +15,13 @@ class RegisterUserForm(UserCreationForm):
    
     roles = [('', '-----------------')] + roles
     username = forms.CharField(label='Введите логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
+    email = forms.EmailField(label='Введите email', widget=forms.TextInput(attrs={'class': 'form-input'}))
     job = forms.ChoiceField(label='Выберите роль', choices=roles, required=False)
     password1 = forms.CharField(label='Введите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Повторите пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     class Meta:
         model = User
-        fields = ('username', 'job', 'password1', 'password2',)
+        fields = ('username', 'email', 'job', 'password1', 'password2',)
 
 
 class RegisterAdminUserForm(RegisterUserForm):
