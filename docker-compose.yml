@@ -11,7 +11,6 @@ services:
             - "8000:8000"
         depends_on:
             - pgdb
-            - redis
 
     pgdb:
         image: postgres
@@ -26,17 +25,5 @@ services:
         ports:
             - 5432:5432
 
-    redis:
-        image: redis:latest
-        container_name: redis
-        ports:
-            - 6379:6379
-        command: redis-server --requirepass pass
-        environment:
-            - REDIS_HOST=localhost
-            - REDIS_PORT=6379
-            - REDIS_PASSWORD=pass
-
-    
 volumes:
     pgdata:
