@@ -1,8 +1,26 @@
 <html><body>
+    {% if request.user.is_staff %}
+    
+    <h2>attendance</h2>
+    <ul>
+        {% for attend in attendances %}
+        <li>{{ attend }}| {{attend.date}}| {{ attend.point }}|<a href="{{request.path}}/{{attend.pk}}">update Points</a></li>
+        {% endfor %}
+    </ul>
+    {% elif request.user.job == 'student'%}
     <h1>attendance</h1>
     <ul>
-        {% for attend in attendance %}
-        <li>{{ attend }}| {{attend.date}}</li>
+        {% for attend in attendances %}
+        <li> {{ attend }}| {{attend.date}}| points: {{ attend.point }}| </li>
+    
         {% endfor %}
+   {% else %}
+   <h1>attendance</h1>
+    <ul>
+        {% for attend in attendances %}
+        <li>{{ attend }}| {{attend.date}}| points: {{ attend.point }}|<a href="{{request.path}}{{attend.pk}}">update Points</a></li>
+    
+        {% endfor %}
+        {% endif %}
     </ul>
     </body></html>

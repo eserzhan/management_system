@@ -5,15 +5,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from .models import *
 from django.db.models import Q
+from django.forms import modelformset_factory
+from .utils import *
 
 User1 = get_user_model()
 
 
 class RegisterUserForm(UserCreationForm):
-    roles = [
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-    ]
+   
     roles = [('', '-----------------')] + roles
     username = forms.CharField(label='Введите логин', widget=forms.TextInput(attrs={'class': 'form-input'}))
     job = forms.ChoiceField(label='Выберите роль', choices=roles, required=False)
@@ -27,19 +26,25 @@ class RegisterUserForm(UserCreationForm):
 class RegisterAdminUserForm(RegisterUserForm):
     is_staff = forms.BooleanField(label='Персонал', required=False)
     is_superuser = forms.BooleanField(label='Админ', required=False)
-
+  
+    statuses = [
+        ('Unverified', 'unverified'),
+        ('Verified', 'verified'),
+        ('Deactivated', 'deactivated'),
+    ]
     class Meta:
         model = User
-        fields = ('username', 'job', 'password1', 'password2', 'is_staff', 'is_superuser')
+        fields = ('username', 'job', 'password1', 'password2', 'is_staff', 'is_superuser', 'status')
 
 
 class RegisterTeacherForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+            self.request = kwargs.pop("request")
             super().__init__(*args, **kwargs)
             self.fields['user'].initial = User1.objects.latest('pk')
             self.fields['user'].disabled = True
-            # self.fields['user'].initial = User.objects.latest('pk').pk
+    
 
     class Meta:
         model = Teacher
@@ -52,10 +57,11 @@ class RegisterTeacherForm(forms.ModelForm):
 
 class RegisterStudentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['user'].initial = User1.objects.latest('pk')
-            self.fields['user'].disabled = True
-            # self.fields['user'].initial = User.objects.latest('pk').pk
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+        self.fields['user'].initial = User1.objects.latest('pk')
+        self.fields['user'].disabled = True
+        
 
     class Meta:
         model = Student
@@ -67,34 +73,43 @@ class RegisterStudentForm(forms.ModelForm):
 
 
 class RegisterSubjectForm(forms.ModelForm):
-    DAYS_OF_WEEK = (
-    ('Monday', 'Monday'),
-    ('Tuesday', 'Tuesday'),
-    ('Wednesday', 'Wednesday'),
-    ('Thursday', 'Thursday'),
-    ('Friday', 'Friday'),
-    ('Saturday', 'Saturday'),
-    ('Sunday', 'Sunday'),
-)
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        print(self.request)
+        super().__init__(*args, **kwargs)
+        
 
     class Meta:
         model = Subject
         fields = '__all__'
         widgets = {
-            'start_time': forms.TimeInput(),
-            'end_time': forms.TimeInput(),
             'days': forms.CheckboxSelectMultiple()
         }       
 
+class RegisterSelfSubjectForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+        
+
+    class Meta:
+        model = Subject
+        fields = ('name', 'days', 'time','cabinet')
+        widgets = {
+            'days': forms.CheckboxSelectMultiple()
+        }       
 
 class RegisterStudentSubjectForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = StudentSubject
         fields = '__all__'
 
-class PickyAuthenticationForm(AuthenticationForm):
 
+class PickyAuthenticationForm(AuthenticationForm):
     def confirm_login_allowed(self, user):
         if user.status == 'unverified':
             raise ValidationError(
@@ -103,17 +118,38 @@ class PickyAuthenticationForm(AuthenticationForm):
             )
 
 class Attendanceform(forms.ModelForm):
-    
     def __init__(self, *args, **kwargs):
             self.request = kwargs.pop("request")
             super().__init__(*args, **kwargs)
-            print(self.request)
-            self.fields['stsu'].initial = StudentSubject.objects.get(Q(subject__name=self.request['subjname']) & Q(student__user__username=self.request['stud']))
-            print(self.fields['stsu'].initial)
+            self.fields['stsu'].initial = StudentSubject.objects.get(Q(subject__name=self.request['sbj_name']) & Q(student__user__username=self.request['st_name']))
             self.fields['stsu'].disabled = True
             
     class Meta:
         model = Attendance
-        #widgets = {'employee' : HiddenInput}
-        fields = ('stsu', 'attended')
-       
+        fields = ('stsu', 'attended', 'point')
+
+
+class AttendanceAllform(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+            self.__class__.request = kwargs.pop("request")
+            super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Attendance
+        fields = ('stsu', 'attended', 'point')
+#AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(StudentSubject.objects.all()),)
+
+#AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(Attendance.objects.filter(stsu__subject__name=).values('stsu').distinct()))
+# class PointForm(forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#             self.request = kwargs.pop("request")
+#             super().__init__(*args, **kwargs)
+#             self.fields['att'].initial = Attendance.objects.get(pk = self.request['date'])
+#             self.fields['att'].disabled = True
+
+#     class Meta:
+#         model = Point
+#         fields = '__all__'
+
+
+ 

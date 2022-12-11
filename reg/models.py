@@ -5,7 +5,8 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.urls import reverse
 from django.contrib.postgres.fields import ArrayField
 from django import forms
-
+from .utils import *
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class ChoiceArrayField(ArrayField):
     
@@ -20,15 +21,15 @@ class ChoiceArrayField(ArrayField):
 
 
 class User(AbstractUser):
-    statuses = [
-        ('Unverified', 'unverified'),
-        ('Verified', 'verified'),
-        ('Deactivated', 'deactivated'),
-    ]
-    roles = [
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
-]
+#     statuses = [
+#         ('Unverified', 'unverified'),
+#         ('Verified', 'verified'),
+#         ('Deactivated', 'deactivated'),
+#     ]
+#     roles = [
+#         ('student', 'Student'),
+#         ('teacher', 'Teacher'),
+# ]
     phone = models.IntegerField(null=True, blank=True)
     job = models.CharField(max_length=25, choices=roles, null=True, blank=True)
     status = models.CharField(default='Unverified', max_length=25, choices=statuses)
@@ -91,9 +92,21 @@ class Attendance(models.Model):
     stsu = models.ForeignKey(StudentSubject, on_delete=models.CASCADE, null = True)
     attended = models.CharField(max_length=8, choices=attendance_choices, blank=True)
     date = models.DateTimeField(default = timezone.now())
+    point = models.IntegerField(default = 0, validators=[
+            MaxValueValidator(100),
+            MinValueValidator(0)
+        ])
     
     def get_absolute_url(self):
         return reverse("namesubj", kwargs={"pk": self.stsu})
 
     def __str__(self):
-        return f'{self.stsu.student.user.username} - {self.attended}'
+        return f'{self.stsu.student.user.username} - {self.attended} '
+    
+
+# class Point(models.Model):
+#     att = models.ForeignKey(Attendance, on_delete=models.CASCADE, null = True, blank=True)
+#     point = models.IntegerField(null = True, blank=True)
+
+#     def __str__(self):
+#         return f'{self.att.stsu.student.user.username} - {self.point} '
