@@ -23,6 +23,7 @@ urlpatterns = [
     path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>', AttendanceView.as_view(), name='att'),
     #path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>/create/', AttendanceCreate.as_view(), name='attcr'),
     path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>/<pk>/', AttendanceUpdateView.as_view(), name='ptscr'),
+    path('subjects/', AllSubjectList.as_view()),
 #subj
     path('mysubjects/', SubjectList.as_view(), name='namesubj'),
     path('mysubjects/<str:sbj_name>/', StudentList.as_view(), name='namestu'),

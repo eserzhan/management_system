@@ -1,0 +1,154 @@
+{% load static %}
+<html>
+
+<head>
+    
+    <title>Glovo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'header/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'header/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'header/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'header/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'header/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'header/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'header/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'header/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'header/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'header/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'header/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'header/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'header/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'header/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="{% static 'header/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="60">
+    
+    <div class="jumbotron text-center fixed" style="background-image: url('{% static 'images/ЕДа.jpg'%}')";>
+        <div class="container">
+            <h1 class="text-center">Glovo доставит все, что угодно </h1>
+        </div>
+    </div>
+
+    <nav class="navbar logo-text">
+        <div class="container-fluid bg-color-css">
+          <div>
+            <ul class="nav navbar-nav navbar-center">
+              <li><a href="#"> Глово <br> Glovo</a></li>
+              <li>
+                  <a href="#"> 
+                      <img src="{% static 'img/glovo.jpg' %}" width="200" alt = "petrhleb">
+                  </a>
+              </li>
+              <li><a href="#">Глово <br> Glovo</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid bg-color-css">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+    
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-center">
+            <li><a href="#about">О Компании</a></li>
+            <li><a href="#news">Новости</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Рестораны<span class="caret"></span></a>
+              <ul class="dropdown-menu text-center">
+                <li><a href="/blog/products3/" target="_blank"><center>KFC</center></a></li>
+                <li><a href="/blog/products1/" target="_blank"><center>Burger King</center></a></li>
+                <li><a href="/blog/products4/" target="_blank"><center>Mcdonalds</center></a></li>
+                
+              </ul>
+            </li>
+            <li><a href="#contacts">Контакты</a></li>
+            <li>
+              
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/glovo_kz" target="_blank">
+              <center><i class="fa fa-instagram w3-hover-opacity"></i> Glovo</center>
+              </a>
+            </li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    
+    {% block content %}
+    {% endblock %}
+
+    <div id="contacts" class="container-fluid w3-light-grey text-center">
+
+      <h2 class="text-center w3-padding-32">К О Н Т А К Т Ы</h2>
+      <div class="row">
+          
+        <div class="col-lg-12 contact-info">
+          <h4>Call center</h4>
+          <div class="container">
+            <p class="col-lg-6 col-md-12"> </p>
+            <p class="col-lg-6 col-md-12"> <center class="glyphicon glyphicon-phone"></span> 8 705 308 55 89 </p>
+         
+        
+        
+        <footer class="w3-container w3-white w3-center w3-xlarge">
+        <p class="w3-medium">2020  <a href="https://www.instagram.com/glovo_kz/" target="_blank" class="w3-hover-text-red">  </a></p>
+        </footer>
+            
+        <script>
+
+            $(document).ready(function(){
+              // Add smooth scrolling to all links in navbar + footer link
+              $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+            
+               // Make sure this.hash has a value before overriding default behavior
+              if (this.hash !== "") {
+            
+                // Prevent default anchor click behavior
+                event.preventDefault();
+            
+                // Store hash
+                var hash = this.hash;
+            
+                // Using jQuery's animate() method to add smooth page scroll
+                // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+                $('html, body').animate({
+                  scrollTop: $(hash).offset().top
+                }, 900, function(){
+            
+                  // Add hash (#) to URL when done scrolling (default click behavior)
+                  window.location.hash = hash;
+                  });
+                } // End if
+              });
+            });
+            
+            </script>
+             
+        
+    </div>
+
+</body>
+
+</html>

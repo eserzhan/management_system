@@ -59,6 +59,7 @@ class RegisterStudentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
+        print(self.fields)
         self.fields['user'].initial = User1.objects.latest('pk')
         self.fields['user'].disabled = True
         
@@ -130,26 +131,20 @@ class Attendanceform(forms.ModelForm):
 
 
 class AttendanceAllform(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-            self.__class__.request = kwargs.pop("request")
-            super().__init__(*args, **kwargs)
+    initial_fields = ['stsu']
 
+    def __init__(self, *args, **kwargs):
+            #print(kwargs)
+            #kwargs.pop("request")
+            
+            super().__init__(*args, **kwargs)
+           
+            #self.fields['stsu'].widget.attrs['disabled'] = True
+           
     class Meta:
         model = Attendance
         fields = ('stsu', 'attended', 'point')
 #AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(StudentSubject.objects.all()),)
-
-#AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(Attendance.objects.filter(stsu__subject__name=).values('stsu').distinct()))
-# class PointForm(forms.ModelForm):
-#     def __init__(self, *args, **kwargs):
-#             self.request = kwargs.pop("request")
-#             super().__init__(*args, **kwargs)
-#             self.fields['att'].initial = Attendance.objects.get(pk = self.request['date'])
-#             self.fields['att'].disabled = True
-
-#     class Meta:
-#         model = Point
-#         fields = '__all__'
 
 
  

@@ -12,7 +12,7 @@ from .serializers import *
 from django.contrib.auth.mixins import AccessMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.forms import modelformset_factory
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 #DjangoFormset = modelformset_factory(Attendanceform, fields = '__all__')
 
 class PassRequestToFormViewMixin:
@@ -22,22 +22,26 @@ class PassRequestToFormViewMixin:
         return kwargs
 
 
-class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
+class AttendanceForAll( CreateView):
     form_class = AttendanceAllform
     template_name = 'forall.html'
     success_url = reverse_lazy('home')
     temp = None 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['formset'] = self.__class__.AttendanceFormSet(queryset=Attendance.objects.none(),initial=self.temp )
+       
+        formset = self.__class__.AttendanceFormSet(queryset=Attendance.objects.none(),initial=self.temp )
+    
+        context['formset'] = formset
         return context
 
     def post(self, request, *args, **kwargs):
         formset = self.__class__.AttendanceFormSet(request.POST)
-        print(formset)
+      
+        print(formset.errors)
         if formset.is_valid() :
             return self.form_valid(formset)
-        
+    
     def form_valid(self, formset):
         instances = formset.save(commit=False)
         for instance in instances:
@@ -45,10 +49,9 @@ class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
         return HttpResponseRedirect(self.__class__.success_url)
 
     def setup(self, request, *args, **kwargs):
-        #self.__class__.AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(Attendance.objects.filter(stsu__subject__name=kwargs['sbj_name']).values('stsu').distinct()))
-        self.__class__.AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended', 'point'),extra=len(StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])))
-        #self.__class__.temp = [{'stsu': x['stsu'], 'attended':'absent'} for x in Attendance.objects.filter(stsu__subject__name=kwargs['sbj_name']).values('stsu').distinct()]
-        self.__class__.temp = [{'stsu': x, 'attended':'absent', 'point': 0} for x in StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])]
+        self.__class__.AttendanceFormSet = modelformset_factory(Attendance, form=AttendanceAllform,extra=len(StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])))
+        
+        self.__class__.temp = [{'stsu':x, 'attended':'absent', 'point': 0} for x in StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])]
         return super().setup(request, *args, **kwargs)
     
 class RegisterUser(CreateView):
@@ -179,7 +182,7 @@ class TeacherList(UserPassesTestMixin, ListView):
         return  self.request.user.is_staff
 
 
-class SubjectList(UserPassesTestMixin, ListView):
+class SubjectList(LoginRequiredMixin, UserPassesTestMixin, ListView):
    
     template_name = 'subjects_list.html'
     context_object_name = 'subjects'
@@ -230,3 +233,12 @@ class AttendanceView(ListView):
         self.__class__.queryset = Attendance.objects.filter(Q(stsu__student__user__username=kwargs['st_name']) & Q(stsu__subject__name=kwargs['sbj_name']))
         return super().get(request, *args, **kwargs)
 
+
+class AllSubjectList(ListView):
+    template_name = 'allsubjects.html'
+    context_object_name = 'allsubjects'
+
+    def get(self, request, *args, **kwargs):
+        self.__class__.queryset = Subject.objects.all()
+     
+        return super().get(request, *args, **kwargs)
