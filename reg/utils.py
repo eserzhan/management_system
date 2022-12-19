@@ -18,6 +18,7 @@ statuses = [
         ('Verified', 'verified'),
         ('Deactivated', 'deactivated'),
     ]
+
 roles = [
         ('student', 'Student'),
         ('teacher', 'Teacher'),
