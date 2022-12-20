@@ -157,7 +157,7 @@ class LoginUser(UserPassesTestMixin, LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('log')
+    return redirect('logi')
 
 
 class TeacherList(UserPassesTestMixin, ListView):

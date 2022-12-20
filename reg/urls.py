@@ -11,8 +11,8 @@ urlpatterns = [
     path('<str:st_name>/mysubjects/', SubjectList.as_view(), name='mysubjects'),
     path('<str:st_name>/mysubjects/<str:sbj_name>/attendance', AttendanceView.as_view(), name='mysubjet'),
 
-    path('login/', LoginUser.as_view(), name='login'),
-    path('logout/', logout_user, name='logout'),
+    path('login/', LoginUser.as_view(), name='logi'),
+    path('logout/', logout_user, name='logo'),
 
     path('users/', UserListView.as_view(), name='users'),
     path('users/<pk>/update', UserUpdateView.as_view(), name='update_user'),
