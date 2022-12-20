@@ -34,7 +34,7 @@ class PassRequestToFormViewMixin:
 
 class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
     form_class = AttendanceAllform
-    template_name = 'forall.html'
+    template_name = 'attendance_for_all.html'
     success_url = reverse_lazy('index')
     temp = None
 
@@ -126,8 +126,9 @@ class UserUpdateView(UpdateView):
     model = User
     fields = ['status']
     success_url = reverse_lazy('index')
-    context_object_name = 'use'
+    context_object_name = 'user'
     template_name = 'user_update_form.html'
+
 
 class AttendanceUpdateView(UpdateView):
     model = Attendance
@@ -179,7 +180,6 @@ class SubjectList(ListView):
         if request.user.is_staff and request.user.is_superuser:
             if len(kwargs) == 0:
                 self.__class__.queryset = Subject.objects.all()
-
             else:
                 user = User.objects.get(username=kwargs['teachername']).pk
                 teacher_n = Teacher.objects.get(user_id = user)

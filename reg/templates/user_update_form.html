@@ -1,4 +1,16 @@
-<form method="post">{% csrf_token %}
-     {{ form.as_p }}
-    <input type="submit" value="Update">
-</form>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h3 class="mt-4"> Update status for user: {{ user.username}} </h3>
+            <form class="mt-4" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="mt-4" type="submit" value="Update">
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
