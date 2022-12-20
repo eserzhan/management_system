@@ -201,7 +201,7 @@ class SubjectList(ListView):
 
 
 class AllSubjectList(ListView):
-    template_name = 'subjects_list.html'
+    template_name = 'all_subjects_list.html'
     context_object_name = 'subjects'
 
     def get(self, request, *args, **kwargs):

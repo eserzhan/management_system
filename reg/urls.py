@@ -23,7 +23,7 @@ urlpatterns = [
     path('teacher/<str:teachername>/subject/', SubjectList.as_view(), name='teacher_subject'),
     path('teacher/<str:teachername>/subject/<str:sbj_name>/', StudentList.as_view(), name='teacher_subject_students'),
     path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/', AttendanceForAll.as_view(), name='teacher_attendance'),
-    path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>', AttendanceView.as_view(), name='attendance'),
+    path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>/', AttendanceView.as_view(), name='attendance'),
     path('teacher/<str:teachername>/subject/<str:sbj_name>/attendance/<str:st_name>/<pk>/', AttendanceUpdateView.as_view()),
 
     path('subjects/', AllSubjectList.as_view(), name='subjects'),
