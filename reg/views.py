@@ -134,7 +134,7 @@ class UserUpdateView(UpdateView):
 class AttendanceUpdateView(UpdateView):
     model = Attendance
     fields = ['attended', 'point']
-    template_name_suffix = '_update_form'
+    template_name = 'attendance_update_form.html'
     success_url = reverse_lazy('index')
     context_object_name = 'use'
 
@@ -158,7 +158,7 @@ class LoginUser(UserPassesTestMixin, LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('log')
+    return redirect('index')
 
 
 class TeacherList(UserPassesTestMixin, ListView):
