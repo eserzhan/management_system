@@ -81,7 +81,7 @@
                                     <tbody>
                                         {% for subject in subjects %}
                                         <tr>
-                                          <td>{{ subject.name }}|<a href="{{request.path}}{{ subject.name }}/attendance">attendance</a></td>
+                                          <td><a href="{{request.path}}{{ subject.name }}/">{{ subject.name }}</a></td>
                                           {% for i in subject.days %}
                                           <td>{{ i }} </td>
                                           <td>{{ subject.time|index:forloop.counter0 }}</td>

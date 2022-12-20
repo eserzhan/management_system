@@ -125,7 +125,6 @@ class UserListView(ListView):
 class UserUpdateView(UpdateView):
     model = User
     fields = ['status']
-    #template_name_suffix = '_update_form'
     success_url = reverse_lazy('index')
     context_object_name = 'use'
     template_name = 'user_update_form.html'
