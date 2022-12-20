@@ -74,22 +74,21 @@
                                             <th>Subject</th>
                                             <th>Days</th>
                                             <th>Time</th>
-                                            <!-- <th>Grade</th>
-                                            <th>Teacher</th> -->
+                                            <th>Teacher</th>
+                                            <th>Cabinet</th>
+                                            <th>Attendance</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for subject in subjects %}
                                         <tr>
-                                          <td>{{ subject.name }}|<a href="{{request.path}}{{ subject.name }}/attendance">attendance</a></td>
-                                          {% for i in subject.days %}
-                                          <td>{{ i }} </td>
-                                          <td>{{ subject.time|index:forloop.counter0 }}</td>
-                                          <!-- <td>{{ subject.day }}</td>
-                                          <td>{{ subject.time }}</td>
-                                          <td>{{ subject.teacher.user.first_name }}</td> -->
+                                            <td>{{ subject.name }}</td>
+                                            <td>{{ subject.days|index:forloop.counter0 }}</td>
+                                            <td>{{ subject.time|index:forloop.counter0 }}</td>
+                                            <td>{{ subject.teacher.user.first_name }}</td>
+                                            <td>{{ subject.cabinet }}</td>
+                                            <td><a href="{{request.path}}{{ subject.name }}/attendance">Mark</a></td>   
                                         </tr>
-                                        {% endfor %}
                                         {% endfor %}
                                     </tbody>
                                 </table>

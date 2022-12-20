@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     path('', Index.as_view(), name='index'),
-    path('register/', RegisterUser.as_view(), name='BaseU'),
+    path('register/', RegisterUser.as_view(), name='register'),
     path('register/<int:num>/', RegisterSelfSubject.as_view(), name='selfsubj'),
     path('register/<str:sl_url>/', RegisterActivity.as_view(), name='act'),
     
