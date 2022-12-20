@@ -1,8 +1,43 @@
-<html><body>
-    <h1>Teachers</h1>
-    <ul>
-        {% for teacher in teachers %}
-        <li>{{ teacher.user.username }}|<a href="{% url 'subject' teacher.user.username  %}">Subjects</a></li>
-        {% endfor %}
-    </ul>
-    </body></html>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Teachers</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Teachers
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Specialization</th>
+                                <th>Education</th>
+                                <th>Subjects</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for teacher in teachers %}
+                            <tr>
+                              <td>{{ teacher.user.username }}</td>
+                              <td>{{ teacher.user.email }}</td>
+                              <td>{{ teacher.user.phone }}</td>
+                              <td>{{ teacher.specialization }}</td>
+                              <td>{{ teacher.education }}</td>
+                              <td><a href="{% url 'teacher_subject' teacher.user.username  %}">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,26 +1,43 @@
-{% load index %}
-<html><body>
-    <h1>Subjects</h1>
-    <ul>
-        {% for subject in subjects %}
-        {% if request.user.job == 'student' %}
-        <li>{{ subject.subject.name }}|<a href="{{request.path}}{{ subject.subject.name }}/attendance">My attendance</a></li>
-        {% for i in subject.subject.days %}
-            <a>{{ i }} {{ subject.subject.time|index:forloop.counter0 }}</a>
-            
-            {% endfor %}
-          
-           
-            
-        {% else %}
-        <li>{{ subject.name }}|<a href="{{request.path}}{{ subject.name }}">Students in this subject</a></li>
-      
-        {% for i in subject.days %}
-            <a>{{ i }} {{ subject.time|index:forloop.counter0 }}</a>
-            
-        {% endfor %}
-        {% endif %}
-        {% endfor %}
-        
-    </ul>
-    </body></html>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Subjects</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Subjects
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th colspan="3">Date-Time</th>
+                                <th>Teacher</th>
+                                <th>Cabinet</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td><a href="{{request.path}}{{ subject.name }}/">{{ subject.name }}</a></td>
+                                {% for day in subject.days %}
+                                <td>{{ day }} - {{ subject.time.0 }}</td>
+                                {% endfor %}
+                                <td>{{ subject.teacher.user.first_name }}</td>
+                                <td>{{ subject.cabinet }}</td>
+                                <td><a href="{{request.path}}{{ subject.name }}/attendance">Mark</a></td>   
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,8 +1,39 @@
-<html><body>
-    <h1>Students</h1>
-    <ul>
-        {% for student in students %}
-            <li>{{ student.user.username }}</li>
-        {% endfor %}
-    </ul>
-</body></html>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Students</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Students
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                              <td>{{ student.user.username }}</td>
+                              <td>{{ student.user.email }}</td>
+                              <td>{{ student.user.phone }}</td>
+                              <td>{{ student.grade }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}        

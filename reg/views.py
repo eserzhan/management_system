@@ -2,27 +2,29 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth import logout
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponse, HttpResponseForbidden
 from django.http import HttpResponseRedirect
-from reg.forms import *
-from rest_framework import generics
-from .serializers import *
-from django.contrib.auth.mixins import AccessMixin, UserPassesTestMixin
+
 from django.db.models import Q
 from django.forms import modelformset_factory
+from rest_framework import generics
+
+from reg.forms import *
+from .serializers import *
 
 
 class Index(LoginRequiredMixin, View):
     template = 'index.html'
     login_url = '/login/'
 
+
     def get(self, request):
         employees = User.objects.all()
         return render(request, self.template, {'users': employees})
+
 
 class PassRequestToFormViewMixin:
     def get_form_kwargs(self):
@@ -33,9 +35,10 @@ class PassRequestToFormViewMixin:
 
 class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
     form_class = AttendanceAllform
-    template_name = 'forall.html'
+    template_name = 'attendance_for_all.html'
     success_url = reverse_lazy('index')
-    temp = None 
+    temp = None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = self.__class__.AttendanceFormSet(queryset=Attendance.objects.none(),initial=self.temp )
@@ -54,15 +57,14 @@ class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
         return HttpResponseRedirect(self.__class__.success_url)
 
     def setup(self, request, *args, **kwargs):
-        #self.__class__.AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended'),extra=len(Attendance.objects.filter(stsu__subject__name=kwargs['sbj_name']).values('stsu').distinct()))
         self.__class__.AttendanceFormSet = modelformset_factory(Attendance, fields =('stsu', 'attended', 'point'),extra=len(StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])))
-        #self.__class__.temp = [{'stsu': x['stsu'], 'attended':'absent'} for x in Attendance.objects.filter(stsu__subject__name=kwargs['sbj_name']).values('stsu').distinct()]
         self.__class__.temp = [{'stsu': x, 'attended':'absent', 'point': 0} for x in StudentSubject.objects.filter(subject__name=kwargs['sbj_name'])]
         return super().setup(request, *args, **kwargs)
-    
+
+
 class RegisterUser(CreateView):
     form_class = None
-    template_name = 'reg/register.html'
+    template_name = 'register.html'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,10 +84,9 @@ class RegisterUser(CreateView):
     
 class RegisterActivity(PassRequestToFormViewMixin, CreateView):
     form_class = None
-    template_name = 'reg/register.html'
+    template_name = 'register.html'
     success_url = reverse_lazy('index')
 
-    
     def setup(self, request, *args, **kwargs):
         if kwargs['sl_url'] == 'student':
             self.__class__.form_class = RegisterStudentForm
@@ -98,9 +99,8 @@ class RegisterActivity(PassRequestToFormViewMixin, CreateView):
         return super().setup(request, *args, **kwargs)
 
 
-
 class RegisterSelfSubject(PassRequestToFormViewMixin, CreateView):
-    template_name = 'reg/register.html'
+    template_name = 'register.html'
     success_url = reverse_lazy('index')
     form_class = RegisterSelfSubjectForm
 
@@ -117,30 +117,31 @@ class TeacherAPIView(generics.ListCreateAPIView):
     serializer_class = TeacherSerializer
 
 
-class ArticleListView(ListView):
+class UserListView(ListView):
     model = User
     paginate_by = 100  
-    template_name = 'reg/articles.html'
+    template_name = 'users_list.html'
 
 
 class UserUpdateView(UpdateView):
     model = User
     fields = ['status']
-    template_name_suffix = '_update_form'
     success_url = reverse_lazy('index')
-    context_object_name = 'use'
+    context_object_name = 'user'
+    template_name = 'user_update_form.html'
+
 
 class AttendanceUpdateView(UpdateView):
     model = Attendance
     fields = ['attended', 'point']
-    template_name_suffix = '_update_form'
+    template_name = 'attendance_update_form.html'
     success_url = reverse_lazy('index')
     context_object_name = 'use'
 
 
 class LoginUser(UserPassesTestMixin, LoginView):
     form_class = AuthenticationForm
-    template_name = 'reg/login.html'
+    template_name = 'login.html'
     authentication_form = PickyAuthenticationForm
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -153,21 +154,17 @@ class LoginUser(UserPassesTestMixin, LoginView):
 
     def test_func(self):
         return self.request.user.__str__() == 'AnonymousUser'
-
-
-def bas(request): 
-    return render(request, 'reg/base.html')
-
+        
 
 def logout_user(request):
     logout(request)
-    return redirect('log')
-
+    return redirect('index')
 
 
 class TeacherList(UserPassesTestMixin, ListView):
     template_name = 'teachers_list.html'
     context_object_name = 'teachers'
+
     def get(self, request, *args, **kwargs):
         self.__class__.queryset = Teacher.objects.all()
         return super().get(request, *args, **kwargs)
@@ -177,7 +174,6 @@ class TeacherList(UserPassesTestMixin, ListView):
 
 
 class SubjectList(ListView):
-   
     template_name = 'subjects_list.html'
     context_object_name = 'subjects'
 
@@ -185,7 +181,6 @@ class SubjectList(ListView):
         if request.user.is_staff and request.user.is_superuser:
             if len(kwargs) == 0:
                 self.__class__.queryset = Subject.objects.all()
-
             else:
                 user = User.objects.get(username=kwargs['teachername']).pk
                 teacher_n = Teacher.objects.get(user_id = user)
@@ -242,9 +237,7 @@ class AllStudentsList(ListView):
         return super().get(request, *args, **kwargs)
 
 
-
 class AttendanceView(ListView):
-    
     template_name = 'attendance_list.html'
     context_object_name = 'attendances'
    
