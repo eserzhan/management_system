@@ -40,17 +40,21 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
+                            {% if request.user.is_staff %}
                             <a class="nav-link" href="/register/">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Create Admin
                             </a>
+                            {% endif %}
                             <a class="nav-link" href="/register/teacher-subject/">
                                 <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                                 Create Subject
                             </a>
+                            {% if request.user.is_staff %}
                             <a class="nav-link" href="{% url 'act' 'student-subject' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Create Schedule
+                            {% endif %}
                             </a>
                         </div>
                     </div>
