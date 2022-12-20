@@ -20,6 +20,7 @@ class Index(LoginRequiredMixin, View):
     template = 'index.html'
     login_url = '/login/'
 
+
     def get(self, request):
         employees = User.objects.all()
         return render(request, self.template, {'users': employees})
