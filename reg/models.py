@@ -27,7 +27,7 @@ class User(AbstractUser):
         return f'{self.username} - {self.status}'
 
     def get_absolute_url(self):
-        return reverse("pkk", kwargs={"pk": self.pk})
+        return reverse("update_user", kwargs={"pk": self.pk})
 
 
 class Teacher(models.Model):

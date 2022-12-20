@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h3 class="mt-4"> Student attended lesson </h3>
+            <form method="post">{% csrf_token %}
+
+                {{ formset.management_form }}
+                {% for form in formset %}
+                {{ form }}<br><br>
+                {% endfor %}
+                <input type="submit" value="Mark">
+
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
