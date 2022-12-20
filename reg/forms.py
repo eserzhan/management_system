@@ -75,7 +75,6 @@ class RegisterSubjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        print(self.request)
         super().__init__(*args, **kwargs)
 
     class Meta:
@@ -113,7 +112,6 @@ class RegisterStudentSubjectForm(forms.ModelForm):
 class PickyAuthenticationForm(AuthenticationForm):
 
     def confirm_login_allowed(self, user):
-        print(user.status)
         if user.status == 'Unverified':
             raise ValidationError(
                 "Account not verified. Contact admin.",

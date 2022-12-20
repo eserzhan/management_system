@@ -1,4 +1,17 @@
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-   <input type="submit" value="Update">
-</form>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h2 class="mt-4">Update attendance</h2>
+
+            <form method="post">{% csrf_token %}
+                {{ form.as_p }}
+            <input type="submit" value="Update">
+            </form>
+
+        </div>
+    </main>
+</div>
+{% endblock %}

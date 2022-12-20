@@ -20,13 +20,13 @@ class Index(LoginRequiredMixin, View):
     template = 'index.html'
     login_url = '/login/'
 
-
     def get(self, request):
         employees = User.objects.all()
         return render(request, self.template, {'users': employees})
 
 
 class PassRequestToFormViewMixin:
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.kwargs
@@ -46,7 +46,6 @@ class AttendanceForAll(PassRequestToFormViewMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         formset = self.__class__.AttendanceFormSet(request.POST)
-        print(formset)
         if formset.is_valid() :
             return self.form_valid(formset)
         

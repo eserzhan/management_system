@@ -1,26 +1,38 @@
-<html><body>
-    {% if request.user.is_staff %}
-    
-    <h2>attendance</h2>
-    <ul>
-        {% for attend in attendances %}
-        <li>{{ attend }}| {{attend.date}}| {{ attend.point }}|<a href="{{request.path}}/{{attend.pk}}">update Points</a></li>
-        {% endfor %}
-    </ul>
-    {% elif request.user.job == 'student'%}
-    <h1>attendance</h1>
-    <ul>
-        {% for attend in attendances %}
-        <li> {{ attend }}| {{attend.date}}| points: {{ attend.point }}| </li>
-    
-        {% endfor %}
-   {% else %}
-   <h1>attendance</h1>
-    <ul>
-        {% for attend in attendances %}
-        <li>{{ attend }}| {{attend.date}}| points: {{ attend.point }}|<a href="{{request.path}}{{attend.pk}}">update Points</a></li>
-    
-        {% endfor %}
-        {% endif %}
-    </ul>
-    </body></html>
+{% extends "base.html" %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h2 class="mt-4">Attendance</h2>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Students
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Student - Presence</th>
+                                <th>Date</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attend in attendances %}
+                            <tr>
+                              <td>{{ attend }}</td>
+                              <td>{{ attend.date }}</td>
+                              <td><a href="{{request.path}}{{attend.pk}}">{{ attend.point }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

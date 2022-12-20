@@ -1,14 +1,46 @@
-<html><body>
-    <!-- <h1>Students| |<a href="{{request.path}}attendance">Attendance</a></h1> -->
-    <ul>
-        {% if request.user.job == 'teacher'%}
-        {% for student in students %}
-            <li>{{ student.student.user.username }}|<a href="{{request.path}}{{ student.student.user.username }}/rate">rate</a></li>
-            {% endfor %}
-        {% else %}
-        {% for student in students %}
-             <li>{{ student.student.user.username }}|<a href="{{request.path}}attendance/{{ student.student.user.username }}">Attendance</a></li>
-        {% endfor %}
-        {% endif %}
-    </ul>
-    </body></html>
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Info</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Students
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Mark</th>
+                            </tr>
+                        </thead>
+                        {% if request.user.job == 'teacher'%}
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                              <td>{{ student.student.user.username }}</td>
+                              <td><a href="{{request.path}}{{ student.student.user.username }}/rate">Attendance</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% else %}
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                              <td>{{ student.student.user.username }}</td>
+                              <td><a href="{{request.path}}{{ student.student.user.username }}/rate/{{ student.student.user.pk }}">Attendance</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+    </main>
+</div>
+{% endblock %}
