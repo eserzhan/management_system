@@ -19,7 +19,7 @@ class RegisterUserForm(UserCreationForm):
     roles = [('', '-----------------')] + roles
     username = forms.CharField(label='Login', widget=forms.TextInput(attrs={'class': 'form-input'}))
     email = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'class': 'form-input'}))
-    job = forms.ChoiceField(label='Role', choices=roles, required=False)
+    job = forms.ChoiceField(label='Role', choices=roles, required=True)
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     password2 = forms.CharField(label='Repeat password', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
     phone = forms.CharField(label='Phone', widget=forms.TextInput(attrs={'class': 'form-input'}))
@@ -113,7 +113,8 @@ class RegisterStudentSubjectForm(forms.ModelForm):
 class PickyAuthenticationForm(AuthenticationForm):
 
     def confirm_login_allowed(self, user):
-        if user.status == 'unverified':
+        print(user.status)
+        if user.status == 'Unverified':
             raise ValidationError(
                 "Account not verified. Contact admin.",
                 code='no_b_users',
